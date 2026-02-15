@@ -1,0 +1,135 @@
+// 博客系统数据模型定义
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique @db.VarChar(50)
+  email        String    @unique @db.VarChar(100)
+  passwordHash String    @db.VarChar(255)
+  avatar       String?   @db.VarChar(255)
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  // 关系
+  posts    Post[]
+  comments Comment[]
+  
+  @@map("users")
+}
+
+// 文章表
+model Post {
+  id          String    @id @default(cuid())
+  title       String    @db.VarChar(200)
+  slug        String    @unique @db.VarChar(200)
+  content     String    @db.Text
+  excerpt     String?   @db.VarChar(500)
+  coverImage  String?   @db.VarChar(255)
+  status      PostStatus @default(DRAFT)
+  authorId    String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // 关系
+  author       User           @relation(fields: [authorId], references: [id])
+  categories   PostCategory[]
+  tags         PostTag[]
+  comments     Comment[]
+  
+  @@map("posts")
+}
+
+// 分类表
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique @db.VarChar(50)
+  slug        String    @unique @db.VarChar(50)
+  description String?   @db.VarChar(200)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // 关系
+  posts PostCategory[]
+  
+  @@map("categories")
+}
+
+// 标签表
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique @db.VarChar(50)
+  slug      String    @unique @db.VarChar(50)
+  createdAt DateTime  @default(now())
+  
+  // 关系
+  posts PostTag[]
+  
+  @@map("tags")
+}
+
+// 文章-分类关联表 (多对多)
+model PostCategory {
+  id         String   @id @default(cuid())
+  postId     String
+  categoryId String
+  
+  post       Post     @relation(fields: [postId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+  
+  @@unique([postId, categoryId])
+  @@map("post_categories")
+}
+
+// 文章-标签关联表 (多对多)
+model PostTag {
+  id     String @id @default(cuid())
+  postId String
+  tagId  String
+  
+  post   Post   @relation(fields: [postId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id])
+  
+  @@unique([postId, tagId])
+  @@map("post_tags")
+}
+
+// 评论表
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  authorId  String
+  postId    String
+  parentId  String?
+  createdAt DateTime @default(now())
+  
+  // 关系
+  author   User     @relation(fields: [authorId], references: [id])
+  post     Post     @relation(fields: [postId], references: [id])
+  parent   Comment? @relation("CommentToComment", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentToComment")
+  
+  @@map("comments")
+}
+
+// 枚举类型
+enum Role {
+  ADMIN
+  EDITOR
+  USER
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

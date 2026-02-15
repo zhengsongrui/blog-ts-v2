@@ -1,0 +1,1312 @@
+openapi: 3.0.3
+info:
+  title: BlogV2 Backend API
+  description: |
+    一个现代化的博客后端API，提供用户管理、文章发布、分类标签等功能。
+    使用JWT令牌进行身份验证，支持基于角色的权限控制。
+  version: 1.0.0
+  contact:
+    name: API 支持
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: 本地开发服务器
+  - url: https://api.example.com/api/v1
+    description: 生产服务器
+
+tags:
+  - name: 用户
+    description: 用户注册、登录和个人信息管理
+  - name: 文章
+    description: 文章的创建、读取、更新、删除和查询操作
+  - name: 系统
+    description: 系统健康检查和基本信息
+
+paths:
+  # ==================== 用户相关接口 ====================
+  /users/register:
+    post:
+      tags:
+        - 用户
+      summary: 用户注册
+      description: 创建一个新的用户账户
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: 用户注册成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUser'
+        '400':
+          description: 请求参数错误或用户已存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /users/login:
+    post:
+      tags:
+        - 用户
+      summary: 用户登录
+      description: 验证用户凭证并返回JWT令牌
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: 登录成功，返回用户信息和令牌
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: 用户名或密码错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /users/me:
+    get:
+      tags:
+        - 用户
+      summary: 获取当前用户信息
+      description: 获取当前已认证用户的详细信息
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功返回当前用户信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUser'
+        '401':
+          description: 未提供有效令牌
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    patch:
+      tags:
+        - 用户
+      summary: 更新当前用户信息
+      description: 更新当前已认证用户的个人信息
+      operationId: updateCurrentUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: 用户信息更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUser'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /users:
+    get:
+      tags:
+        - 用户
+      summary: 获取用户列表（分页）
+      description: 获取用户列表，支持分页、排序和筛选。需要管理员权限。
+      operationId: getUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: 页码（默认1）
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: 每页数量（默认10）
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: sortBy
+          in: query
+          description: 排序字段
+          required: false
+          schema:
+            type: string
+            enum: [createdAt, updatedAt, username, email]
+        - name: sortOrder
+          in: query
+          description: 排序顺序
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: 成功返回用户列表和分页信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseUser'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 权限不足（非管理员）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /users/{id}:
+    get:
+      tags:
+        - 用户
+      summary: 根据ID获取用户信息
+      description: 根据用户ID获取用户详细信息。管理员可以查看任何用户，普通用户只能查看自己的信息。
+      operationId: getUserById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 用户ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功返回用户信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUser'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 没有权限查看此用户信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    patch:
+      tags:
+        - 用户
+      summary: 更新用户信息（管理员）
+      description: 管理员更新指定用户的信息
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 用户ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: 用户信息更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUser'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 权限不足（非管理员）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    delete:
+      tags:
+        - 用户
+      summary: 删除用户
+      description: 删除指定用户账户。需要管理员权限。
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 用户ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 用户删除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMessage'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 权限不足（非管理员）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  # ==================== 文章相关接口 ====================
+  /posts:
+    get:
+      tags:
+        - 文章
+      summary: 获取文章列表（分页）
+      description: 获取文章列表，支持分页、筛选和排序。公开访问已发布文章，未发布文章需要管理员权限。
+      operationId: getPosts
+      parameters:
+        - name: page
+          in: query
+          description: 页码（默认1）
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: 每页数量（默认10）
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: sortBy
+          in: query
+          description: 排序字段（默认createdAt）
+          required: false
+          schema:
+            type: string
+            enum: [createdAt, updatedAt, title, views]
+            default: createdAt
+        - name: sortOrder
+          in: query
+          description: 排序顺序（默认desc）
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: status
+          in: query
+          description: 文章状态筛选
+          required: false
+          schema:
+            type: string
+            enum: [DRAFT, PUBLISHED, ARCHIVED]
+        - name: authorId
+          in: query
+          description: 按作者筛选
+          required: false
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          description: 按分类筛选
+          required: false
+          schema:
+            type: string
+        - name: tagId
+          in: query
+          description: 按标签筛选
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功返回文章列表和分页信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponsePost'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    post:
+      tags:
+        - 文章
+      summary: 创建文章
+      description: 创建新的文章。需要认证，编辑或管理员角色。
+      operationId: createPost
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostDto'
+      responses:
+        '201':
+          description: 文章创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponsePost'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 权限不足（非编辑/管理员）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /posts/{id}:
+    get:
+      tags:
+        - 文章
+      summary: 根据ID获取文章
+      description: 根据文章ID获取文章详细信息。公开访问已发布文章，草稿和归档文章需要管理员权限。
+      operationId: getPostById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 文章ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功返回文章详细信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponsePost'
+        '404':
+          description: 文章不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 没有权限访问此文章
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    patch:
+      tags:
+        - 文章
+      summary: 更新文章
+      description: 更新指定文章的信息。需要认证，作者本人或管理员/编辑角色。
+      operationId: updatePost
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 文章ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostDto'
+      responses:
+        '200':
+          description: 文章更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponsePost'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 权限不足（非作者/管理员/编辑）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: 文章不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    delete:
+      tags:
+        - 文章
+      summary: 删除文章
+      description: 删除指定文章。需要认证，作者本人或管理员角色。
+      operationId: deletePost
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 文章ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 文章删除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMessage'
+        '401':
+          description: 未认证
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 权限不足（非作者/管理员）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: 文章不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /posts/slug/{slug}:
+    get:
+      tags:
+        - 文章
+      summary: 根据slug获取文章
+      description: 根据文章slug（URL友好格式）获取文章详细信息。公开访问已发布文章，草稿和归档文章需要管理员权限。
+      operationId: getPostBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: 文章slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功返回文章详细信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponsePost'
+        '404':
+          description: 文章不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 没有权限访问此文章
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /posts/users/{userId}/posts:
+    get:
+      tags:
+        - 文章
+      summary: 获取用户的文章列表
+      description: 获取指定用户的所有文章。公开访问已发布文章，非公开文章需要管理员权限或本人访问。
+      operationId: getUserPosts
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: 用户ID
+          schema:
+            type: string
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/pageSizeQuery'
+        - $ref: '#/components/parameters/sortByQuery'
+        - $ref: '#/components/parameters/sortOrderQuery'
+        - name: status
+          in: query
+          description: 文章状态筛选
+          required: false
+          schema:
+            type: string
+            enum: [DRAFT, PUBLISHED, ARCHIVED]
+      responses:
+        '200':
+          description: 成功返回用户文章列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponsePost'
+        '404':
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: 没有权限访问用户的非公开文章
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  # ==================== 系统相关接口 ====================
+  /health:
+    get:
+      tags:
+        - 系统
+      summary: 健康检查
+      description: 检查服务器和数据库连接状态
+      operationId: healthCheck
+      responses:
+        '200':
+          description: 服务器运行正常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: 数据库连接失败
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /:
+    get:
+      tags:
+        - 系统
+      summary: 欢迎页面
+      description: 返回API的基本信息和版本
+      operationId: getRoot
+      responses:
+        '200':
+          description: 成功返回欢迎信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMessage'
+
+# ==================== 安全方案 ====================
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT
+    description: JWT令牌认证
+
+# ==================== 组件定义 ====================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT令牌认证
+
+  parameters:
+    pageQuery:
+      name: page
+      in: query
+      description: 页码（默认1）
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    pageSizeQuery:
+      name: pageSize
+      in: query
+      description: 每页数量（默认10）
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    sortByQuery:
+      name: sortBy
+      in: query
+      description: 排序字段
+      required: false
+      schema:
+        type: string
+    sortOrderQuery:
+      name: sortOrder
+      in: query
+      description: 排序顺序
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+
+  schemas:
+    # ===== 通用响应格式 =====
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 请求是否成功
+        data:
+          type: object
+          description: 响应数据，具体类型取决于接口
+          nullable: true
+        error:
+          $ref: '#/components/schemas/ApiError'
+          nullable: true
+        message:
+          type: string
+          description: 人类可读的消息
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+          description: 响应时间戳
+      required:
+        - success
+        - data
+        - error
+        - message
+        - timestamp
+
+    ApiError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 错误代码
+        message:
+          type: string
+          description: 错误描述
+        details:
+          type: object
+          description: 错误详情（可选）
+          nullable: true
+      required:
+        - code
+        - message
+
+    ApiResponseMessage:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                message:
+                  type: string
+              required:
+                - message
+
+    # ===== 用户相关 =====
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 用户唯一标识符
+        username:
+          type: string
+          description: 用户名
+        email:
+          type: string
+          format: email
+          description: 电子邮箱
+        role:
+          type: string
+          enum: [USER, EDITOR, ADMIN]
+          description: 用户角色
+        avatar:
+          type: string
+          description: 头像URL
+          nullable: true
+        bio:
+          type: string
+          description: 个人简介
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新时间
+      required:
+        - id
+        - username
+        - email
+        - role
+        - createdAt
+        - updatedAt
+
+    CreateUserDto:
+      type: object
+      properties:
+        username:
+          type: string
+          description: 用户名（3-20个字符）
+          minLength: 3
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          description: 电子邮箱
+        password:
+          type: string
+          description: 密码（至少8个字符）
+          minLength: 8
+        avatar:
+          type: string
+          description: 头像URL
+          nullable: true
+        bio:
+          type: string
+          description: 个人简介
+          nullable: true
+      required:
+        - username
+        - email
+        - password
+
+    UpdateUserDto:
+      type: object
+      properties:
+        username:
+          type: string
+          description: 用户名（3-20个字符）
+          minLength: 3
+          maxLength: 20
+          nullable: true
+        email:
+          type: string
+          format: email
+          description: 电子邮箱
+          nullable: true
+        password:
+          type: string
+          description: 密码（至少8个字符）
+          minLength: 8
+          nullable: true
+        avatar:
+          type: string
+          description: 头像URL
+          nullable: true
+        bio:
+          type: string
+          description: 个人简介
+          nullable: true
+        role:
+          type: string
+          enum: [USER, EDITOR, ADMIN]
+          description: 用户角色
+          nullable: true
+
+    LoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: 电子邮箱
+        password:
+          type: string
+          description: 密码
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 请求是否成功
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              description: JWT访问令牌
+            expiresIn:
+              type: string
+              description: 令牌过期时间（如7d）
+          required:
+            - user
+            - token
+            - expiresIn
+        error:
+          $ref: '#/components/schemas/ApiError'
+          nullable: true
+        message:
+          type: string
+          description: 人类可读的消息
+        timestamp:
+          type: string
+          format: date-time
+          description: 响应时间戳
+      required:
+        - success
+        - data
+        - error
+        - message
+        - timestamp
+
+    ApiResponseUser:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+
+    PaginatedResponseUser:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+            pagination:
+              $ref: '#/components/schemas/PaginationInfo'
+
+    # ===== 文章相关 =====
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 文章唯一标识符
+        title:
+          type: string
+          description: 文章标题
+        slug:
+          type: string
+          description: URL友好标识符
+        content:
+          type: string
+          description: 文章内容（Markdown格式）
+        excerpt:
+          type: string
+          description: 文章摘要
+          nullable: true
+        featuredImage:
+          type: string
+          description: 特色图片URL
+          nullable: true
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, ARCHIVED]
+          description: 文章状态
+        views:
+          type: integer
+          description: 浏览次数
+          default: 0
+        authorId:
+          type: string
+          description: 作者ID
+        author:
+          $ref: '#/components/schemas/User'
+          description: 作者信息
+          nullable: true
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+          description: 文章分类
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          description: 文章标签
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新时间
+        publishedAt:
+          type: string
+          format: date-time
+          description: 发布时间
+          nullable: true
+      required:
+        - id
+        - title
+        - slug
+        - content
+        - status
+        - views
+        - authorId
+        - createdAt
+        - updatedAt
+
+    CreatePostDto:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 文章标题（1-200个字符）
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+          description: 文章内容（Markdown格式）
+        excerpt:
+          type: string
+          description: 文章摘要（可选）
+          nullable: true
+        featuredImage:
+          type: string
+          description: 特色图片URL（可选）
+          nullable: true
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, ARCHIVED]
+          description: 文章状态
+          default: DRAFT
+        categoryIds:
+          type: array
+          items:
+            type: string
+          description: 分类ID列表
+        tagIds:
+          type: array
+          items:
+            type: string
+          description: 标签ID列表
+      required:
+        - title
+        - content
+        - categoryIds
+
+    UpdatePostDto:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 文章标题（1-200个字符）
+          minLength: 1
+          maxLength: 200
+          nullable: true
+        content:
+          type: string
+          description: 文章内容（Markdown格式）
+          nullable: true
+        excerpt:
+          type: string
+          description: 文章摘要（可选）
+          nullable: true
+        featuredImage:
+          type: string
+          description: 特色图片URL（可选）
+          nullable: true
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, ARCHIVED]
+          description: 文章状态
+          nullable: true
+        categoryIds:
+          type: array
+          items:
+            type: string
+          description: 分类ID列表
+          nullable: true
+        tagIds:
+          type: array
+          items:
+            type: string
+          description: 标签ID列表
+          nullable: true
+
+    ApiResponsePost:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Post'
+
+    PaginatedResponsePost:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Post'
+            pagination:
+              $ref: '#/components/schemas/PaginationInfo'
+
+    # ===== 分类和标签 =====
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 分类唯一标识符
+        name:
+          type: string
+          description: 分类名称
+        slug:
+          type: string
+          description: URL友好标识符
+        description:
+          type: string
+          description: 分类描述
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新时间
+      required:
+        - id
+        - name
+        - slug
+        - createdAt
+        - updatedAt
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 标签唯一标识符
+        name:
+          type: string
+          description: 标签名称
+        slug:
+          type: string
+          description: URL友好标识符
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新时间
+      required:
+        - id
+        - name
+        - slug
+        - createdAt
+        - updatedAt
+
+    # ===== 分页信息 =====
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: 当前页码
+        pageSize:
+          type: integer
+          description: 每页数量
+        totalItems:
+          type: integer
+          description: 总项目数
+        totalPages:
+          type: integer
+          description: 总页数
+        hasNextPage:
+          type: boolean
+          description: 是否有下一页
+        hasPreviousPage:
+          type: boolean
+          description: 是否有上一页
+      required:
+        - page
+        - pageSize
+        - totalItems
+        - totalPages
+        - hasNextPage
+        - hasPreviousPage
+
+    # ===== 健康检查响应 =====
+    HealthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 服务器是否正常运行
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              description: 服务器状态
+            timestamp:
+              type: string
+              format: date-time
+              description: 检查时间
+            database:
+              type: boolean
+              description: 数据库连接状态
+          required:
+            - status
+            - timestamp
+            - database
+        error:
+          $ref: '#/components/schemas/ApiError'
+          nullable: true
+        message:
+          type: string
+          description: 健康检查消息
+        timestamp:
+          type: string
+          format: date-time
+          description: 响应时间戳
+      required:
+        - success
+        - data
+        - error
+        - message
+        - timestamp
