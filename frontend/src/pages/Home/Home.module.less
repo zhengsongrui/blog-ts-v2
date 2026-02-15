@@ -1,0 +1,291 @@
+@import '@/styles/variables.less';
+
+.home-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  position: relative;
+  overflow: hidden;
+  padding: @spacing-xl 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    right: -10%;
+    bottom: -10%;
+    background: 
+      radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9) 0%, transparent 60%);
+    z-index: 1;
+  }
+
+  .home-hero {
+    text-align: center;
+    padding: @spacing-xxl @spacing-xl;
+    margin-bottom: @spacing-xxl;
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .home-title {
+      font-size: 56px;
+      font-weight: 800;
+      color: @gray-8;
+      margin-bottom: @spacing-md;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+      @media (max-width: @screen-sm) {
+        font-size: 40px;
+      }
+
+      @media (max-width: @screen-xs) {
+        font-size: 32px;
+      }
+    }
+
+    .home-subtitle {
+      font-size: @font-size-lg * 1.25;
+      color: @gray-6;
+      margin-bottom: @spacing-xxl;
+      font-weight: 300;
+      line-height: 1.6;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+
+      @media (max-width: @screen-sm) {
+        font-size: @font-size-lg;
+      }
+    }
+
+    .home-welcome {
+      margin-top: @spacing-xl;
+
+      .home-welcome-text {
+        font-size: @font-size-lg;
+        color: @gray-7;
+        margin-bottom: @spacing-xl;
+        font-weight: 400;
+
+        strong {
+          color: @primary-color;
+          font-weight: 700;
+        }
+      }
+
+      .ant-btn {
+        height: 56px;
+        padding: 0 40px;
+        font-size: @font-size-lg;
+        font-weight: 600;
+        border-radius: @border-radius-base;
+        background: linear-gradient(90deg, @primary-color, @primary-color-hover);
+        border: none;
+        box-shadow: 0 6px 20px rgba(@primary-color, 0.3);
+        transition: all 0.4s ease;
+
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 25px rgba(@primary-color, 0.4);
+          background: linear-gradient(90deg, @primary-color-hover, @primary-color-active);
+        }
+      }
+    }
+
+    .home-actions {
+      display: flex;
+      justify-content: center;
+      gap: @spacing-lg;
+      margin-top: @spacing-xl;
+
+      @media (max-width: @screen-xs) {
+        flex-direction: column;
+        align-items: center;
+        gap: @spacing-md;
+      }
+
+      .ant-btn {
+        height: 56px;
+        padding: 0 40px;
+        font-size: @font-size-lg;
+        font-weight: 600;
+        border-radius: @border-radius-base;
+        transition: all 0.3s ease;
+
+        &:first-child {
+          background: linear-gradient(90deg, @primary-color, @primary-color-hover);
+          border: none;
+          box-shadow: 0 6px 20px rgba(@primary-color, 0.3);
+
+          &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(@primary-color, 0.4);
+            background: linear-gradient(90deg, @primary-color-hover, @primary-color-active);
+          }
+        }
+
+        &:last-child {
+          background: @white;
+          border: 2px solid @primary-color;
+          color: @primary-color;
+          box-shadow: 0 4px 12px rgba(@primary-color, 0.15);
+
+          &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(@primary-color, 0.25);
+            background: @primary-color;
+            color: @white;
+          }
+        }
+      }
+    }
+  }
+
+  .home-features {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 @spacing-xl;
+
+    .ant-row {
+      justify-content: center;
+    }
+
+    .ant-col {
+      display: flex;
+    }
+
+    .ant-card {
+      border-radius: @border-radius-base * 1.5;
+      border: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+
+      &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        border-color: @primary-color;
+      }
+
+      .ant-card-head {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        padding: @spacing-lg @spacing-lg 0;
+
+        .ant-card-head-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: @gray-8;
+          padding: 0;
+        }
+      }
+
+      .ant-card-body {
+        flex: 1;
+        padding: @spacing-lg;
+        color: @gray-7;
+        font-size: @font-size-base;
+        line-height: 1.6;
+      }
+    }
+  }
+}
+
+// 响应式调整
+@media (max-width: @screen-lg) {
+  .home-page {
+    .home-hero {
+      padding: @spacing-xl @spacing-lg;
+
+      .home-title {
+        font-size: 48px;
+      }
+    }
+
+    .home-features {
+      padding: 0 @spacing-lg;
+    }
+  }
+}
+
+@media (max-width: @screen-sm) {
+  .home-page {
+    padding: @spacing-lg 0;
+
+    .home-hero {
+      padding: @spacing-xl @spacing-md;
+      margin-bottom: @spacing-xl;
+
+      .home-title {
+        font-size: 36px;
+      }
+
+      .home-subtitle {
+        font-size: @font-size-lg;
+        margin-bottom: @spacing-xl;
+      }
+
+      .home-welcome {
+        .ant-btn {
+          height: 52px;
+          padding: 0 32px;
+          font-size: @font-size-base;
+        }
+      }
+
+      .home-actions {
+        .ant-btn {
+          height: 52px;
+          padding: 0 32px;
+          font-size: @font-size-base;
+        }
+      }
+    }
+
+    .home-features {
+      padding: 0 @spacing-md;
+
+      .ant-card {
+        .ant-card-head-title {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: @screen-xs) {
+  .home-page {
+    .home-hero {
+      .home-title {
+        font-size: 28px;
+      }
+
+      .home-subtitle {
+        font-size: @font-size-base;
+      }
+
+      .home-welcome,
+      .home-actions {
+        .ant-btn {
+          height: 48px;
+          padding: 0 24px;
+          width: 100%;
+          max-width: 280px;
+        }
+      }
+    }
+  }
+}

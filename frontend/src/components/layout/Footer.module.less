@@ -1,0 +1,57 @@
+// Footer 组件样式
+// 导入设计变量
+@import '../../styles/variables.less';
+
+.footer {
+  text-align: center;
+  padding-top: @spacing-md;
+  padding-bottom: @spacing-md;
+  color: @text-color-secondary;
+  font-size: @font-size-sm;
+  border-top: 1px solid @border-color-base;
+  margin-top: @spacing-xl;
+
+  // 暗色模式
+  :global(.dark) & {
+    color: @gray-5;
+    border-top-color: @gray-7;
+  }
+}
+
+.container {
+  max-width: @container-max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: @spacing-md;
+  padding-right: @spacing-md;
+}
+
+.copyright {
+  margin-bottom: 0;
+}
+
+.links {
+  margin-top: @spacing-sm;
+
+  a {
+    color: @primary-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.email-link {
+  margin-top: @spacing-sm;
+
+  a {
+    color: @primary-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

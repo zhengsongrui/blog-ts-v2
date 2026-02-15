@@ -1,0 +1,93 @@
+// Sidebar 组件样式
+// 导入设计变量
+@import '../../styles/variables.less';
+
+.sidebar {
+  border-right: 1px solid @border-color-base;
+  background-color: @white;
+  height: 100%;
+
+  // 暗色模式
+  :global(.dark) & {
+    background-color: @gray-8;
+    border-right-color: @gray-7;
+  }
+}
+
+.sidebar-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-area {
+  padding: @spacing-md;
+  border-bottom: 1px solid @border-color-base;
+
+  // 暗色模式
+  :global(.dark) & {
+    border-bottom-color: @gray-7;
+  }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-box {
+  width: 32px;
+  height: 32px;
+  background-color: @primary-color;
+  border-radius: @border-radius-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .logo-letter {
+    color: @white;
+    font-weight: bold;
+  }
+}
+
+.logo-text {
+  margin-left: @spacing-md;
+  font-weight: bold;
+  color: @text-color;
+
+  // 暗色模式
+  :global(.dark) & {
+    color: @white;
+  }
+}
+
+.menu-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: @spacing-md;
+  padding-bottom: @spacing-md;
+}
+
+.menu {
+  border: none;
+}
+
+.bottom-area {
+  padding: @spacing-md;
+  border-top: 1px solid @border-color-base;
+
+  // 暗色模式
+  :global(.dark) & {
+    border-top-color: @gray-7;
+  }
+}
+
+.bottom-button {
+  width: 100%;
+}
+
+.bottom-button-icon {
+  display: flex;
+  justify-content: center;
+}

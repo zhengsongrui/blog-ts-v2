@@ -1,0 +1,114 @@
+// Header 组件样式
+// 导入设计变量
+@import '../../styles/variables.less';
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: @spacing-md;
+  padding-right: @spacing-md;
+  background-color: @white;
+  border-bottom: 1px solid @border-color-base;
+  height: 64px;
+
+  // 响应式 padding
+  @media (min-width: @screen-md) {
+    padding-left: @spacing-lg;
+    padding-right: @spacing-lg;
+  }
+
+  // 暗色模式
+  :global(.dark) & {
+    background-color: @gray-8;
+    border-bottom-color: @gray-7;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-button {
+  margin-right: @spacing-md;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo-box {
+  width: 32px;
+  height: 32px;
+  background-color: @primary-color;
+  border-radius: @border-radius-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: @spacing-md;
+
+  .logo-letter {
+    color: @white;
+    font-weight: bold;
+  }
+}
+
+.app-name {
+  font-size: @font-size-lg + 4px;
+  font-weight: bold;
+  color: @text-color;
+
+  // 暗色模式
+  :global(.dark) & {
+    color: @white;
+  }
+
+  // 隐藏在小屏幕
+  @media (max-width: (@screen-md - 1px)) {
+    display: none;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: @spacing-md;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user-avatar {
+  margin-right: @spacing-sm;
+}
+
+.username {
+  color: @text-color-secondary;
+
+  // 暗色模式
+  :global(.dark) & {
+    color: @gray-3;
+  }
+
+  // 隐藏在小屏幕
+  @media (max-width: (@screen-md - 1px)) {
+    display: none;
+  }
+}
+
+// 主题切换按钮
+.theme-toggle {
+  // 无需额外样式，使用 Ant Design 默认按钮
+}
+
+// 登录/注册按钮区域
+.auth-buttons {
+  display: flex;
+  gap: @spacing-sm;
+}

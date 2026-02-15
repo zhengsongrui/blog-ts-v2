@@ -1,0 +1,40 @@
+// Loading 组件样式
+// 导入设计变量
+@import '../../styles/variables.less';
+
+.loading-fullscreen {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(@white, 0.8);
+  z-index: @z-index-modal;
+
+  // 暗色模式
+  :global(.dark) & {
+    background-color: rgba(@gray-8, 0.8);
+  }
+}
+
+// 可选的尺寸调整
+.loading-small {
+  :global(.ant-spin) {
+    font-size: @font-size-sm;
+  }
+}
+
+.loading-default {
+  :global(.ant-spin) {
+    font-size: @font-size-base;
+  }
+}
+
+.loading-large {
+  :global(.ant-spin) {
+    font-size: @font-size-lg;
+  }
+}

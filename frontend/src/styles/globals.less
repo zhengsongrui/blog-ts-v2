@@ -1,0 +1,171 @@
+// ====================================
+// 全局样式
+// ====================================
+
+@import './variables.less';
+
+// 全局重置和基础样式
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: @font-family;
+  font-size: @font-size-base;
+  line-height: @line-height-base;
+  color: @text-color;
+  background-color: @background-color-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: @gray-2;
+  border-radius: @border-radius-sm;
+}
+
+::-webkit-scrollbar-thumb {
+  background: @gray-5;
+  border-radius: @border-radius-sm;
+
+  &:hover {
+    background: @gray-6;
+  }
+}
+
+// 链接样式
+a {
+  color: @primary-color;
+  text-decoration: none;
+  transition: color @animation-duration-base @animation-timing-function;
+
+  &:hover {
+    color: @primary-color-hover;
+    text-decoration: underline;
+  }
+}
+
+// 图片自适应
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+// 工具类
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+// 响应式隐藏
+@media (max-width: @screen-sm) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: @screen-md) {
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+
+// 动画
+.fade-in {
+  animation: fadeIn @animation-duration-slow @animation-timing-function;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-up {
+  animation: slideUp @animation-duration-base @animation-timing-function;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Ant Design 自定义样式
+.ant-layout {
+  background-color: transparent;
+}
+
+.ant-card {
+  border-radius: @border-radius-base;
+  box-shadow: @box-shadow-sm;
+  transition: box-shadow @animation-duration-base @animation-timing-function;
+
+  &:hover {
+    box-shadow: @box-shadow-base;
+  }
+}
+
+.ant-btn {
+  border-radius: @border-radius-base;
+  font-weight: 500;
+}
+
+.ant-form-item {
+  margin-bottom: @spacing-lg;
+}
+
+.ant-input,
+.ant-input-password,
+.ant-select-selector {
+  border-radius: @border-radius-base;
+}
+
+// 全局工具类
+.container {
+  max-width: @container-max-width;
+  margin: 0 auto;
+  padding: 0 @spacing-md;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
