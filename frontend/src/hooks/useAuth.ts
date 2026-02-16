@@ -36,14 +36,9 @@ export const useAuth = () => {
         console.log(response);
         const { user, token } = response;
 
-        console.log('登录成功', { user, token });
         // 更新状态存储
         storeLogin(user, token);
 
-        // 显示成功消息
-        message.success('登录成功');
-
-        console.log('导航到首页');
         // 跳转到首页
         navigate(ROUTE_PATHS.HOME, { replace: true });
 

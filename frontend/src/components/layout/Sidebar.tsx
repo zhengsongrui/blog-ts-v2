@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Layout, Menu, Button, theme } from 'antd';
 import {
   HomeOutlined,
@@ -35,28 +35,62 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
   const navigate = useNavigate();
 
   // 根据当前路径更新选中的菜单项
-  const pathToKeyMap: Record<string, string> = {
-    [ROUTE_PATHS.HOME]: 'home',
-    [ROUTE_PATHS.POSTS]: 'posts',
-    [ROUTE_PATHS.POST_CREATE]: 'create-post',
-    [ROUTE_PATHS.USER_PROFILE]: 'profile',
-    [ROUTE_PATHS.ADMIN]: 'admin',
-    [ROUTE_PATHS.ADMIN_USERS]: 'admin-users',
-    [ROUTE_PATHS.ADMIN_POSTS]: 'admin-posts',
-  };
+  const pathToKeyMap: Array<{ path: string; key: string; exact?: boolean }> = [
+    // 精确匹配的路径
+    { path: ROUTE_PATHS.HOME, key: 'home', exact: true },
+    { path: ROUTE_PATHS.POSTS, key: 'posts', exact: true },
+    { path: ROUTE_PATHS.POST_DETAIL, key: 'posts', exact: false },
+    { path: ROUTE_PATHS.POST_EDIT, key: 'posts', exact: false },
+    { path: ROUTE_PATHS.POST_CREATE, key: 'create-post', exact: true },
+    { path: ROUTE_PATHS.USER_PROFILE, key: 'profile', exact: true },
+    { path: ROUTE_PATHS.ADMIN, key: 'system', exact: true },
+    { path: ROUTE_PATHS.ADMIN_USERS, key: 'admin-users', exact: true },
+    { path: ROUTE_PATHS.ADMIN_POSTS, key: 'admin-posts', exact: true },
+    { path: '/admin/categories', key: 'categories', exact: true },
+    { path: '/admin/tags', key: 'tags', exact: true },
+    { path: '/settings', key: 'settings', exact: true },
+  ];
 
   // 监听路径变化
-  useState(() => {
+  useEffect(() => {
     const currentPath = location.pathname;
-    const key = Object.entries(pathToKeyMap).find(([path]) =>
-      currentPath.startsWith(path)
-    )?.[1];
-    if (key) {
-      setSelectedKeys([key]);
-    }
-  });
+    let matchedKey: string | null = null;
 
-  const menuItems = [
+    // 优先匹配 exact: true 的路径
+    for (const { path, key, exact } of pathToKeyMap) {
+      if (exact) {
+        if (currentPath === path) {
+          matchedKey = key;
+          break;
+        }
+      } else {
+        if (currentPath.startsWith(path)) {
+          matchedKey = key;
+          break;
+        }
+      }
+    }
+
+    console.log('路径变化:', currentPath, '匹配的key:', matchedKey);
+    if (matchedKey) {
+      setSelectedKeys([matchedKey]);
+    } else {
+      // 如果没有匹配的路径，清空选中状态
+      setSelectedKeys([]);
+    }
+  }, [location.pathname]);
+
+  // 调试 selectedKeys 变化
+  useEffect(() => {
+    console.log('selectedKeys 更新:', selectedKeys);
+  }, [selectedKeys]);
+
+  // 处理菜单点击
+  const handleMenuClick = (key: string) => {
+    setSelectedKeys([key]);
+  };
+
+  const menuItems = useMemo(() => [
     {
       key: 'home',
       icon: <HomeOutlined />,
@@ -66,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
     {
       key: 'posts',
       icon: <ReadOutlined />,
-      label: '文章列表',
+      label: '文章',
       onClick: () => navigate(ROUTE_PATHS.POSTS),
     },
     {
@@ -79,10 +113,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
       type: 'divider' as const,
     },
     {
-      key: 'management',
+      key: 'content-management',
       icon: <DashboardOutlined />,
       label: '内容管理',
       children: [
+        {
+          key: 'admin-posts',
+          icon: <FileTextOutlined />,
+          label: '文章管理',
+          onClick: () => navigate(ROUTE_PATHS.ADMIN_POSTS),
+        },
         {
           key: 'categories',
           icon: <FolderOutlined />,
@@ -111,14 +151,14 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
         {
           key: 'settings',
           icon: <SettingOutlined />,
-          label: '账户设置',
+          label: '设置',
           onClick: () => navigate('/settings'),
         },
       ],
     },
     {
-      key: 'admin',
-      icon: <DashboardOutlined />,
+      key: 'system',
+      icon: <SettingOutlined />,
       label: '系统管理',
       children: [
         {
@@ -127,15 +167,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
           label: '用户管理',
           onClick: () => navigate(ROUTE_PATHS.ADMIN_USERS),
         },
-        {
-          key: 'admin-posts',
-          icon: <FileTextOutlined />,
-          label: '文章管理',
-          onClick: () => navigate(ROUTE_PATHS.ADMIN_POSTS),
-        },
       ],
     },
-  ];
+  ], [navigate]);
 
   return (
     <Sider
@@ -149,7 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
     >
       <div className={styles['sidebar-inner']}>
         {/* Logo 区域 */}
-        <div className={styles['logo-area']}>
+        {/* <div className={styles['logo-area']}>
           <div className={styles['logo-container']}>
             <div className={styles['logo-box']}>
               <span className={styles['logo-letter']}>B</span>
@@ -160,7 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
               </span>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* 菜单区域 */}
         <div className={styles['menu-area']}>
@@ -169,6 +203,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
             selectedKeys={selectedKeys}
             items={menuItems}
             className={styles.menu}
+            onClick={({ key }) => {
+              setSelectedKeys([key]);
+            }}
           />
         </div>
 
@@ -182,7 +219,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
               onClick={() => navigate('/settings')}
               className={styles['bottom-button']}
             >
-              系统设置
+              设置
             </Button>
           )}
           {collapsed && (

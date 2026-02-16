@@ -5,31 +5,8 @@
 
 import type { User } from './user.types';
 import type { PostStatus } from './common.types';
-
-// ===== 分类和标签 =====
-
-/**
- * 分类
- */
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-/**
- * 标签
- */
-export interface Tag {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { Category } from './category.types';
+import type { Tag } from './tag.types';
 
 // ===== 文章实体 =====
 

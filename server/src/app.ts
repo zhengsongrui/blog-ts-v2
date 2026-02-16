@@ -25,7 +25,8 @@ import { errorHandler, notFoundHandler } from './middleware/error-middleware';
 // 导入路由模块
 import userRoutes from './routes/user-routes';
 import postRoutes from './routes/post-routes';
-// import categoryRoutes from './routes/category-routes';
+import categoryRoutes from './routes/category-routes';
+import tagRoutes from './routes/tag-routes';
 // import commentRoutes from './routes/comment-routes';
 
 /**
@@ -132,7 +133,8 @@ app.get('/health', (req, res) => {
  */
 app.use(`${config.app.apiPrefix}/users`, userRoutes);    // 用户相关路由
 app.use(`${config.app.apiPrefix}/posts`, postRoutes);    // 文章相关路由
-// app.use(`${config.app.apiPrefix}/categories`, categoryRoutes);  // 分类路由（待实现）
+app.use(`${config.app.apiPrefix}/categories`, categoryRoutes);  // 分类路由
+app.use(`${config.app.apiPrefix}/tags`, tagRoutes);      // 标签路由
 // app.use(`${config.app.apiPrefix}/comments`, commentRoutes);     // 评论路由（待实现）
 
 /**

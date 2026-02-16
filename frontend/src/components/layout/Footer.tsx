@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
         <p className={styles.copyright}>
           © {currentYear} {APP_NAME}. 保留所有权利。
         </p>
-        <p className={styles.links}>
+        {/* <p className={styles.links}>
           <a
             href="https://beian.miit.gov.cn"
             target="_blank"
@@ -25,12 +25,12 @@ const Footer: React.FC = () => {
           >
             粤ICP备12345678号
           </a>
-        </p>
-        <p className={styles['email-link']}>
+        </p> */}
+        {/* <p className={styles['email-link']}>
           联系邮箱：<a href="mailto:support@example.com">
             support@example.com
           </a>
-        </p>
+        </p> */}
       </div>
     </AntFooter>
   );

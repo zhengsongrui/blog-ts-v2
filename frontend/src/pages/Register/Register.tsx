@@ -36,7 +36,7 @@ const Register: React.FC = () => {
     const { confirmPassword, ...registerData } = values;
     const result = await register(registerData);
     if (result.success) {
-      message.success('注册成功');
+      // message.success('注册成功');
       // 注册成功后跳转到登录页，由 useAuth 内部处理
     }
   };

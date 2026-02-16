@@ -1,0 +1,42 @@
+@import '@/styles/variables.less';
+
+.my-table {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  :global {
+    .ant-table-thead > tr > th {
+      background: @background-color-light;
+      font-weight: 600;
+      color: @text-color;
+      border-bottom: 1px solid @border-color-split;
+    }
+
+    .ant-table-tbody > tr > td {
+      border-bottom: 1px solid @border-color-split;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background: @primary-1;
+    }
+
+    .ant-pagination {
+      padding: 16px 24px;
+      margin: 0;
+      border-top: 1px solid @border-color-split;
+    }
+
+    .ant-table-empty {
+      .ant-table-tbody > tr > td {
+        border-bottom: none;
+      }
+    }
+
+    .ant-table-selection-column {
+      width: 60px;
+      min-width: 60px;
+    }
+  }
+}

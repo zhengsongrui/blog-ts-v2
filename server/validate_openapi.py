@@ -6,14 +6,14 @@ import os
 def main():
     file_path = 'docs/openapi.yaml'
     if not os.path.exists(file_path):
-        print(f"❌ 文件不存在: {file_path}")
+        print(f"[ERROR] 文件不存在: {file_path}")
         sys.exit(1)
     
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = yaml.safe_load(f)
         
-        print('✅ YAML 解析成功')
+        print('[OK] YAML 解析成功')
         print(f"OpenAPI 版本: {data.get('openapi')}")
         print(f"API 标题: {data.get('info', {}).get('title')}")
         print(f"API 描述: {data.get('info', {}).get('description', '')[:50]}...")
@@ -34,9 +34,9 @@ def main():
         
         for path in expected_paths:
             if path in data.get('paths', {}):
-                print(f"✅ 路径存在: {path}")
+                print(f"[OK] 路径存在: {path}")
             else:
-                print(f"⚠️  路径缺失: {path}")
+                print(f"[WARN] 路径缺失: {path}")
         
         # 检查关键组件
         expected_schemas = [
@@ -52,24 +52,24 @@ def main():
         
         for schema in expected_schemas:
             if schema in data.get('components', {}).get('schemas', {}):
-                print(f"✅ 组件存在: {schema}")
+                print(f"[OK] 组件存在: {schema}")
             else:
-                print(f"⚠️  组件缺失: {schema}")
+                print(f"[WARN] 组件缺失: {schema}")
         
         # 验证安全方案
         security_schemes = data.get('components', {}).get('securitySchemes', {})
         if 'bearerAuth' in security_schemes:
-            print('✅ 安全方案存在: bearerAuth')
+            print('[OK] 安全方案存在: bearerAuth')
         else:
-            print('⚠️  安全方案缺失: bearerAuth')
+            print('[WARN] 安全方案缺失: bearerAuth')
         
-        print('\n✅ 文档验证完成')
+        print('\n[OK] 文档验证完成')
         
     except yaml.YAMLError as e:
-        print(f'❌ YAML 解析错误: {e}')
+        print(f'[ERROR] YAML 解析错误: {e}')
         sys.exit(1)
     except Exception as e:
-        print(f'❌ 验证错误: {e}')
+        print(f'[ERROR] 验证错误: {e}')
         sys.exit(1)
 
 if __name__ == '__main__':

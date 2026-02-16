@@ -212,14 +212,70 @@ npm run prisma:migrate
 npm run prisma:studio
 ```
 
+## 自动生成文档
+
+现在项目包含了一个自动生成 OpenAPI 文档的工具，可以从 Express 路由文件自动生成 `openapi.yaml` 文件。
+
+### 工具特点
+- **自动解析路由**：从 `server/src/routes/` 目录读取所有 Express 路由文件
+- **智能推断信息**：从 JSDoc 注释、HTTP 方法、路径参数和认证中间件中提取信息
+- **完整的 OpenAPI 3.0 规范**：生成符合规范的文档，包含标签、路径、操作、参数和安全方案
+- **验证功能**：生成后自动验证文档格式和完整性
+
+### 使用方法
+
+```bash
+# 进入 server 目录
+cd server
+
+# 生成 OpenAPI 文档
+npm run generate:openapi
+
+# 或者使用快捷命令
+npm run docs:generate
+
+# 验证生成的文档
+npm run docs:validate
+
+# 启动文档预览服务器（需要安装 @redocly/cli）
+npm run docs:serve
+```
+
+### 生成流程
+1. 扫描 `server/src/routes/` 目录下的所有 `.ts` 路由文件
+2. 解析每个路由定义，提取路径、HTTP 方法、认证要求和 JSDoc 注释
+3. 根据路由信息生成 OpenAPI 规范
+4. 将规范写入 `server/docs/openapi.yaml`
+5. 验证生成的文档格式正确性
+
+### 为 AI 生成代码优化
+生成的文档特别适合 AI 代码生成工具使用，因为：
+- 包含详细的端点描述和参数说明
+- 提供完整的安全方案信息
+- 支持生成 TypeScript 客户端代码
+- 可以直接提供给 ChatGPT、GitHub Copilot 等 AI 助手生成前端代码
+
 ## 更新文档
 
-当 API 有变更时，需要更新 OpenAPI 文档：
+现在你可以选择两种方式更新 OpenAPI 文档：
+
+### 方式一：自动生成（推荐）
+当路由有变更时，只需运行生成命令：
+```bash
+cd server
+npm run generate:openapi
+```
+
+### 方式二：手动编辑
+如果自动生成不能满足特殊需求，可以手动编辑文档：
 
 1. 修改 `server/docs/openapi.yaml` 文件
 2. 确保所有新的端点、参数和响应模式都被正确记录
 3. 更新版本号（如果需要）
-4. 通知前端开发人员
+4. 运行验证命令确保文档格式正确：
+   ```bash
+   npm run docs:validate
+   ```
 
 ## 相关资源
 

@@ -2,7 +2,7 @@
  * 登录页面
  */
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, Checkbox, Divider, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
@@ -11,18 +11,34 @@ import type { LoginDto } from '@/api/types';
 import { ROUTE_PATHS, REGEX } from '@/config/constants';
 import styles from './Login.module.less';
 
+const STORAGE_KEY = 'remembered_email';
+
 const Login: React.FC = () => {
-  const [form] = Form.useForm<LoginDto>();
+  const [form] = Form.useForm<LoginDto & { remember?: boolean }>();
   const navigate = useNavigate();
   const { login, isLoggingIn } = useAuth();
-  const [rememberMe, setRememberMe] = useState(false);
+
+  // 组件挂载时，从本地存储读取记住的邮箱并填充
+  useEffect(() => {
+    const savedEmail = localStorage.getItem(STORAGE_KEY);
+    if (savedEmail) {
+      form.setFieldsValue({ email: savedEmail, remember: true });
+    }
+  }, [form]);
 
   /**
    * 处理表单提交
    */
-  const handleSubmit = async (values: LoginDto) => {
-    const result = await login(values);
+  const handleSubmit = async (values: LoginDto & { remember?: boolean }) => {
+    const { remember, ...loginData } = values;
+    const result = await login(loginData);
     if (result.success) {
+      // 登录成功后，根据 remember 标志保存或清除邮箱
+      if (remember) {
+        localStorage.setItem(STORAGE_KEY, loginData.email);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
       message.success('登录成功');
       // 登录成功后跳转到首页，由 useAuth 内部处理
     }
@@ -33,13 +49,6 @@ const Login: React.FC = () => {
    */
   const handleGoToRegister = () => {
     navigate(ROUTE_PATHS.REGISTER);
-  };
-
-  /**
-   * 处理记住我勾选
-   */
-  const handleRememberMeChange = (e: any) => {
-    setRememberMe(e.target.checked);
   };
 
   return (
@@ -55,6 +64,7 @@ const Login: React.FC = () => {
       requiredMark="optional"
       onFinish={handleSubmit}
       className={styles['login-form']}
+      initialValues={{ remember: false }}
     >
       {/* 邮箱输入 */}
       <Form.Item
@@ -93,9 +103,7 @@ const Login: React.FC = () => {
       {/* 记住我 & 忘记密码 */}
       <div className={styles['login-options']}>
         <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox checked={rememberMe} onChange={handleRememberMeChange}>
-            记住我
-          </Checkbox>
+          <Checkbox>记住我</Checkbox>
         </Form.Item>
         <Link to="/forgot-password" className={styles['forgot-password-link']}>
           忘记密码？

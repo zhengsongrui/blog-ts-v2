@@ -30,8 +30,6 @@ export type {
 
 // 文章相关类型
 export type {
-  Category,
-  Tag,
   Post,
   CreatePostDto,
   UpdatePostDto,
@@ -40,6 +38,33 @@ export type {
   PostQueryParams,
   UserPostsQueryParams,
 } from './post.types';
+
+// 分类相关类型
+export type {
+  Category,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  ApiResponseCategory,
+  PaginatedResponseCategory,
+  CategoryQueryParams,
+  CategoryStats,
+  ApiResponseCategoryStats,
+  BatchCreateCategoryDto,
+} from './category.types';
+
+// 标签相关类型
+export type {
+  Tag,
+  CreateTagDto,
+  UpdateTagDto,
+  ApiResponseTag,
+  PaginatedResponseTag,
+  TagQueryParams,
+  TagStats,
+  ApiResponseTagStats,
+  BatchCreateTagDto,
+  PostTagsQueryParams,
+} from './tag.types';
 
 // 系统相关类型
 export type {

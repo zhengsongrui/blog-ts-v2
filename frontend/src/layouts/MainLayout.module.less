@@ -1,0 +1,45 @@
+// MainLayout 组件样式
+// 导入设计变量
+@import '../styles/variables.less';
+
+.layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// 内层Layout，包含侧边栏和内容区域
+.innerLayout {
+  flex: 1;
+  display: flex;
+}
+
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: @spacing-md;
+
+  @media (min-width: @screen-md) {
+    padding: @spacing-lg;
+  }
+}
+
+.content {
+  background-color: @white;
+  border-radius: @border-radius-base;
+  box-shadow: @box-shadow-sm;
+  padding: @spacing-md;
+  flex: 1;
+  height: calc( 100vh - 64px );
+  overflow-y: auto;
+  
+  @media (min-width: @screen-md) {
+    padding: @spacing-lg;
+  }
+
+  // 暗色模式
+  :global(.dark) & {
+    background-color: @gray-8;
+  }
+}

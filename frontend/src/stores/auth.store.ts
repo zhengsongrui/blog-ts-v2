@@ -61,9 +61,39 @@ export const useAuthStore = create<AuthState>()(
 );
 
 /**
+ * 从 localStorage 中提取 token（支持 persist 对象格式和纯字符串格式）
+ */
+const extractTokenFromStorage = (): string | null => {
+  const stored = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  if (!stored) return null;
+  
+  try {
+    const parsed = JSON.parse(stored);
+    // 如果是 persist 对象格式 {state: {token: "...", user: {...}}, version: 0}
+    if (parsed && typeof parsed === 'object' && parsed.state && parsed.state.token) {
+      return parsed.state.token;
+    }
+    // 如果是旧格式的纯字符串 token
+    if (typeof parsed === 'string') {
+      return parsed;
+    }
+    // 如果 parsed 是其他对象，尝试直接作为 token（向后兼容）
+    if (parsed && parsed.token) {
+      return parsed.token;
+    }
+  } catch {
+    // 解析失败，说明 stored 是纯字符串 token
+    return stored;
+  }
+  
+  // 默认返回 null
+  return null;
+};
+
+/**
  * 检查本地是否存在认证信息（用于初始化）
  */
 export const checkLocalAuth = (): boolean => {
-  const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  const token = extractTokenFromStorage();
   return !!token;
 };

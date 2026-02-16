@@ -9,7 +9,7 @@ const Login = lazy(() => import('@/pages/Login/Login'));
 const Register = lazy(() => import('@/pages/Register/Register'));
 const Posts = lazy(() => import('@/pages/Posts/Posts'));
 const PostDetail = lazy(() => import('@/pages/PostDetail/PostDetail'));
-
+const Categories = lazy(() => import('@/pages/Admin/Categories/Categories'));
 
 // 布局组件
 const MainLayout = lazy(() => import('@/layouts/MainLayout'));
@@ -102,5 +102,22 @@ export const routes: RouteObject[] = [
       },
     ],
   },
-
+  {
+    path: ROUTE_PATHS.ADMIN,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <MainLayout />
+      </Suspense>
+    ),
+    children: [
+      {
+        path: ROUTE_PATHS.ADMIN_CATEGORIES,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <Categories />
+          </Suspense>
+        ),
+      },
+    ],
+  },
 ];

@@ -117,11 +117,33 @@ export interface Category {
   updatedAt: Date;
 }
 
+export interface CreateCategoryDto {
+  name: string;
+  slug: string;
+  description?: string;
+}
+
+export interface UpdateCategoryDto {
+  name?: string;
+  slug?: string;
+  description?: string;
+}
+
 export interface Tag {
   id: string;
   name: string;
   slug: string;
   createdAt: Date;
+}
+
+export interface CreateTagDto {
+  name: string;
+  slug: string;
+}
+
+export interface UpdateTagDto {
+  name?: string;
+  slug?: string;
 }
 
 export interface Comment {

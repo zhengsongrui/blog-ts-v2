@@ -5,7 +5,10 @@
 .sidebar {
   border-right: 1px solid @border-color-base;
   background-color: @white;
-  height: 100%;
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 
   // 暗色模式
   :global(.dark) & {
@@ -71,6 +74,39 @@
 
 .menu {
   border: none;
+
+  :global {
+    .ant-menu-item {
+      transition: all 0.3s ease;
+      
+      &:hover {
+        color: @primary-color;
+      }
+      
+      &.ant-menu-item-selected {
+        background-color: @primary-color !important;
+        color: @white !important;
+        font-weight: 500;
+        
+        &::after {
+          border-right-color: @primary-color !important;
+        }
+        
+        &:hover {
+          background-color: @primary-color-hover !important;
+          color: @white !important;
+        }
+      }
+    }
+    
+    .ant-menu-submenu-title:hover {
+      color: @primary-color;
+    }
+    
+    .ant-menu-submenu-selected > .ant-menu-submenu-title {
+      color: @primary-color;
+    }
+  }
 }
 
 .bottom-area {

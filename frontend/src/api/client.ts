@@ -4,7 +4,7 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import { API_BASE_URL, API_TIMEOUT, STORAGE_KEYS, ERROR_MESSAGES } from '@/config/constants';
 
 // 导入 API 类型定义
@@ -62,32 +62,62 @@ class ApiClient {
     );
 
     // 响应拦截器
-    this.instance.interceptors.response.use(
-      (response: AxiosResponse<ApiResponse>) => {
-        const { data } = response;
-        
-        // 处理业务逻辑错误
-        if (!data.success) {
-          this.handleError(data.error || { code: 'UNKNOWN_ERROR', message: '未知错误' });
-          return Promise.reject(data.error);
+      this.instance.interceptors.response.use(
+        (response: AxiosResponse) => {
+          const { data } = response;
+          
+          // 处理业务逻辑错误
+          if (data.success === false) {
+            this.handleError(data.error || { code: 'UNKNOWN_ERROR', message: '未知错误' });
+            return Promise.reject(data.error);
+          }
+  
+          // 对于分页响应（包含 pagination 字段），返回完整数据
+          // 否则返回 data.data（标准 ApiResponse 格式）
+          if (data && typeof data === 'object' && 'pagination' in data) {
+            // 分页响应已经是完整结构，直接返回
+            return response;
+          }
+  
+          // 标准 ApiResponse 格式，提取 data 字段
+          return {
+            ...response,
+            data: data.data,
+          };
+        },
+        (error) => {
+          // 处理 HTTP 错误'
+          this.handleHttpError(error);
+          return Promise.reject(error);
         }
-
-        // 返回实际数据
-        return {
-          ...response,
-          data: data.data,
-        };
-      },
-      (error) => {
-        // 处理 HTTP 错误'
-        this.handleHttpError(error);
-        return Promise.reject(error);
-      }
-    );
+      );
   }
 
   private getToken(): string | null {
-    return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+    const stored = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+    if (!stored) return null;
+    
+    try {
+      const parsed = JSON.parse(stored);
+      // 如果是 persist 对象格式 {state: {token: "...", user: {...}}, version: 0}
+      if (parsed && typeof parsed === 'object' && parsed.state && parsed.state.token) {
+        return parsed.state.token;
+      }
+      // 如果是旧格式的纯字符串 token
+      if (typeof parsed === 'string') {
+        return parsed;
+      }
+      // 如果 parsed 是其他对象，尝试直接作为 token（向后兼容）
+      if (parsed && parsed.token) {
+        return parsed.token;
+      }
+    } catch {
+      // 解析失败，说明 stored 是纯字符串 token
+      return stored;
+    }
+    
+    // 默认返回 null
+    return null;
   }
 
   private handleError(error: ApiError) {
@@ -107,10 +137,19 @@ class ApiClient {
         console.log(errorMessage,isAtLoginPage)
       } else {
         // 如果在其他页面报 401，说明 token 过期或未登录
-        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.USER_INFO);
-        // 使用 replace 防止用户点后退键回到被拦截的页面
-        window.location.replace('/login');
+        // 弹出提示框，点击确定后跳转到登录页
+        Modal.error({
+          title: '会话已过期',
+          content: '您的登录状态已失效，请重新登录',
+          okText: '确定',
+          cancelButtonProps: { style: { display: 'none' } },
+          onOk: () => {
+            localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.USER_INFO);
+            // 使用 replace 防止用户点后退键回到被拦截的页面
+            window.location.replace('/login');
+          },
+        });
       }
       break;
 
