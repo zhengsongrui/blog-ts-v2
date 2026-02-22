@@ -1,16 +1,17 @@
 import type { RouteObject } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import { ROUTE_PATHS } from './constants';
+import { ROUTE_PATHS } from '../config/constants';
 import Loading from '@/components/common/Loading';
-import Tags from '@/pages/Admin/Tags/Tags';
 
 // 懒加载页面组件
 const Home = lazy(() => import('@/pages/Home/Home'));
 const Login = lazy(() => import('@/pages/Login/Login'));
 const Register = lazy(() => import('@/pages/Register/Register'));
-const Posts = lazy(() => import('@/pages/Posts/Posts'));
 const PostDetail = lazy(() => import('@/pages/PostDetail/PostDetail'));
-const Categories = lazy(() => import('@/pages/Admin/Categories/Categories'));
+const CategoriesManagement = lazy(() => import('@/pages/Admin/CategoriesManagement'));
+const TagsManagement = lazy(() => import('@/pages/Admin/TagsManagement'));
+const PostsManagement = lazy(() => import('@/pages/Admin/PostsManagement'));
+const PostEditor = lazy(() => import('@/pages/Admin/PostEditor/PostEditor'));
 
 // 布局组件
 const MainLayout = lazy(() => import('@/layouts/MainLayout'));
@@ -47,14 +48,14 @@ export const routes: RouteObject[] = [
           </Suspense>
         ),
       },
-      {
-        path: ROUTE_PATHS.POSTS,
-        element: (
-          <Suspense fallback={<LoadingFallback />}>
-            <Posts />
-          </Suspense>
-        ),
-      },
+      // {
+      //   path: ROUTE_PATHS.POSTS,
+      //   element: (
+      //     <Suspense fallback={<LoadingFallback />}>
+      //       <Posts />
+      //     </Suspense>
+      //   ),
+      // },
       {
         path: ROUTE_PATHS.POST_DETAIL,
         element: (
@@ -63,7 +64,14 @@ export const routes: RouteObject[] = [
           </Suspense>
         ),
       },
-     
+      {
+        path: ROUTE_PATHS.ADMIN_POST_CREATE,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <PostEditor />
+          </Suspense>
+        ),
+      },
     
     ],
   },
@@ -112,21 +120,31 @@ export const routes: RouteObject[] = [
     ),
     children: [
       {
-        path: ROUTE_PATHS.ADMIN_CATEGORIES,
+        path: ROUTE_PATHS.ADMIN_CATEGORIES_MANAGEMENT,
         element: (
           <Suspense fallback={<LoadingFallback />}>
-            <Categories />
+            <CategoriesManagement />
           </Suspense>
         ),
       },
       {
-        path: ROUTE_PATHS.ADMIN_TAGS,
+        path: ROUTE_PATHS.ADMIN_TAGS_MANAGEMENT,
         element: (
           <Suspense fallback={<LoadingFallback />}>
-            <Tags />
+            <TagsManagement />
           </Suspense>
         ),
       },
+      {
+        path: ROUTE_PATHS.ADMIN_POSTS_MANAGEMENT,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <PostsManagement />
+          </Suspense>
+        ),
+      },
+     
+      
     ],
   },
 ];

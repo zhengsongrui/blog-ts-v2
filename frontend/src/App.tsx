@@ -4,7 +4,7 @@
 
 import { RouterProvider } from 'react-router-dom';
 import { ConfigProvider, App as AntdApp } from 'antd';
-import { router } from '@/config/router';
+import { router } from '@/router/router';
 import '@/styles/globals.less';
 
 function App() {

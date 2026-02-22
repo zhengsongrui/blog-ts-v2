@@ -35,9 +35,11 @@ export const ROUTE_PATHS = {
   USER_PROFILE: '/profile',
   ADMIN: '/admin',
   ADMIN_USERS: '/admin/users',
-  ADMIN_POSTS: '/admin/posts',
-  ADMIN_CATEGORIES: '/admin/categories',
-  ADMIN_TAGS: '/admin/tags',
+  ADMIN_POSTS_MANAGEMENT: '/admin/postsManagement',
+  ADMIN_POST_CREATE: '/admin/posts/create',
+  ADMIN_POST_EDIT: '/admin/posts/edit/:id',
+  ADMIN_CATEGORIES_MANAGEMENT: '/admin/categoriesManagement',
+  ADMIN_TAGS_MANAGEMENT: '/admin/tagsManagement',
   NOT_FOUND: '/404',
 } as const;
 
