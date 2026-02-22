@@ -1,42 +1,42 @@
 /**
- * 分类管理页面
- * 管理员可以查看、创建、编辑、删除分类
- * 使用新的架构模式，参考岗位管理页面
+ * 标签管理页面
+ * 管理员可以查看、创建、编辑、删除标签
+ * 使用新的架构模式，参考分类管理页面
  */
 
 import React, { useCallback, useRef } from "react";
-import { renderCategoryColumns } from "./schema/tableColumns";
-import { renderCategoryQueryFields } from "./schema/queryFields";
+import { renderTagColumns } from "./schema/tableColumns";
+import { renderTagQueryFields } from "./schema/queryFields";
 import QueryFilter from "@/components/QueryFilter";
 import BaseTable from "@/components/BaseTable";
 import useQueryFilter from "@/hooks/useQueryFilter";
 import useTableRequest from "@/hooks/useTableRequest";
-import EditCategoryModal from "@/components/FormModal";
+import EditTagModal from "@/components/FormModal";
 import type { FormModalRef } from "@/components/FormModal/types";
-import { renderCategoryForm } from "./schema/modalForms";
-import {categoryApi} from "@/api/endpoints/category.api";
-import type { ApiResponseCategory } from "@/api/types/category.types";
+import { renderTagForm } from "./schema/modalForms";
+import {tagApi} from "@/api/endpoints/tag.api";
+import type { ApiResponseTag } from "@/api/types/tag.types";
 import { Button } from "antd";
 
-const Categories: React.FC = () => {
+const Tags: React.FC = () => {
   const query = useQueryFilter({});
 
   /** * 表格请求 Hook
    */
   const table = useTableRequest({
-    request: categoryApi.getCategories,
+    request: tagApi.getTags,
     params: query.getParams(),
   });
-  const handleEdit = useCallback((record: ApiResponseCategory) => {
+  const handleEdit = useCallback((record: ApiResponseTag) => {
     modalRef.current?.open({
-      title: "编辑分类",
+      title: "编辑标签",
       record,
-      api: (data) => categoryApi.updateCategory(record.id, data),
+      api: (data) => tagApi.updateTag(record.id, data),
     });
   }, []);
 
-  const handleDelete = useCallback((record: ApiResponseCategory) => {
-    categoryApi.deleteCategory(record.id).then(() => {
+  const handleDelete = useCallback((record: ApiResponseTag) => {
+    tagApi.deleteTag(record.id).then(() => {
       table.reload();
     });
   }, []);
@@ -46,7 +46,7 @@ const Categories: React.FC = () => {
   return (
     <div>
       <QueryFilter
-        fields={renderCategoryQueryFields({})}
+        fields={renderTagQueryFields({})}
         onChange={query.onChange}
         onSearch={() => {
           table.reload(query.getParams());
@@ -60,19 +60,19 @@ const Categories: React.FC = () => {
             type="primary"
             onClick={() => {
               modalRef.current?.open({
-                title: "新增分类",
+                title: "新增标签",
                 record: {},
-                api: categoryApi.createCategory,
+                api: tagApi.createTag,
               });
             }}
           >
-            新增分类
+            新增标签
           </Button>
         }
       />
 
       <BaseTable
-        columns={renderCategoryColumns({
+        columns={renderTagColumns({
           EditAction: handleEdit,
           DeleteAction: handleDelete,
         })}
@@ -80,13 +80,13 @@ const Categories: React.FC = () => {
         loading={table.loading}
         pagination={table.pagination}
       />
-      <EditCategoryModal
+      <EditTagModal
         ref={modalRef}
         onSuccess={table.reload}
-        renderForm={renderCategoryForm}
+        renderForm={renderTagForm}
       />
     </div>
   );
 };
 
-export default Categories;
+export default Tags;

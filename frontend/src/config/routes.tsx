@@ -2,6 +2,7 @@ import type { RouteObject } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { ROUTE_PATHS } from './constants';
 import Loading from '@/components/common/Loading';
+import Tags from '@/pages/Admin/Tags/Tags';
 
 // 懒加载页面组件
 const Home = lazy(() => import('@/pages/Home/Home'));
@@ -115,6 +116,14 @@ export const routes: RouteObject[] = [
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <Categories />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTE_PATHS.ADMIN_TAGS,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <Tags />
           </Suspense>
         ),
       },

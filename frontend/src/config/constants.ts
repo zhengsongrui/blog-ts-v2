@@ -37,6 +37,7 @@ export const ROUTE_PATHS = {
   ADMIN_USERS: '/admin/users',
   ADMIN_POSTS: '/admin/posts',
   ADMIN_CATEGORIES: '/admin/categories',
+  ADMIN_TAGS: '/admin/tags',
   NOT_FOUND: '/404',
 } as const;
 

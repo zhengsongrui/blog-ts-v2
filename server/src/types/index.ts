@@ -30,6 +30,8 @@ export interface PaginationQuery {
   pageSize?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  name?: string;
+  slug?: string;
 }
 
 // 用户相关类型
@@ -134,6 +136,7 @@ export interface Tag {
   name: string;
   slug: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CreateTagDto {

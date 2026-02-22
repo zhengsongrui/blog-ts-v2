@@ -151,6 +151,8 @@ export const paginationSchema = z.object({
   pageSize: z.coerce.number().int().positive().max(100).optional().default(10),
   sortBy: z.string().optional(),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+  name: z.string().optional(),
+  slug: z.string().optional(),
 });
 
 // 验证函数

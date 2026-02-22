@@ -4,7 +4,6 @@
  */
 
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
 import type { User } from '@/api/types';
 import { STORAGE_KEYS } from '@/config/constants';
 
@@ -24,44 +23,35 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()(
-  devtools(
-    persist(
-      (set) => ({
-        user: null,
-        token: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
+  (set) => ({
+    user: null,
+    token: null,
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
 
-        login: (user, token) => {
-          // 存储到 localStorage（由 persist 中间件自动处理）
-          set({ user, token, isAuthenticated: true, error: null });
-        },
+    login: (user, token) => {
+      // 存储到 localStorage
+      localStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(user));
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, JSON.stringify(token));
+      set({ user, token, isAuthenticated: true, error: null });
+    },
 
-        logout: () => {
-          // 清除状态
-          set({ user: null, token: null, isAuthenticated: false, error: null });
-          // 注意：persist 中间件会自动清除持久化存储，因为我们设置了 name
-        },
+    logout: () => {
+      // 清除状态和持久化存储
+      localStorage.removeItem(STORAGE_KEYS.USER_INFO);
+      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+      set({ user: null, token: null, isAuthenticated: false, error: null });
+    },
 
-        setLoading: (loading) => set({ isLoading: loading }),
-        setError: (error) => set({ error }),
-        clearError: () => set({ error: null }),
-      }),
-      {
-        name: STORAGE_KEYS.AUTH_TOKEN, // 存储键名
-        // 仅持久化 token 和 user，其他状态不持久化
-        partialize: (state) => ({
-          token: state.token,
-          user: state.user,
-        }),
-      }
-    )
-  )
+    setLoading: (loading) => set({ isLoading: loading }),
+    setError: (error) => set({ error }),
+    clearError: () => set({ error: null }),
+  })
 );
 
 /**
- * 从 localStorage 中提取 token（支持 persist 对象格式和纯字符串格式）
+ * 从 localStorage 中提取 token
  */
 const extractTokenFromStorage = (): string | null => {
   const stored = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
@@ -69,25 +59,36 @@ const extractTokenFromStorage = (): string | null => {
   
   try {
     const parsed = JSON.parse(stored);
-    // 如果是 persist 对象格式 {state: {token: "...", user: {...}}, version: 0}
-    if (parsed && typeof parsed === 'object' && parsed.state && parsed.state.token) {
-      return parsed.state.token;
-    }
-    // 如果是旧格式的纯字符串 token
+    // 如果是字符串格式，直接返回
     if (typeof parsed === 'string') {
       return parsed;
     }
-    // 如果 parsed 是其他对象，尝试直接作为 token（向后兼容）
-    if (parsed && parsed.token) {
-      return parsed.token;
-    }
+    // 如果是其他格式的对象，返回 null
+    return null;
   } catch {
     // 解析失败，说明 stored 是纯字符串 token
     return stored;
   }
+};
+
+/**
+ * 从 localStorage 中提取用户信息
+ */
+const extractUserFromStorage = (): User | null => {
+  const stored = localStorage.getItem(STORAGE_KEYS.USER_INFO);
+  if (!stored) return null;
   
-  // 默认返回 null
-  return null;
+  try {
+    const parsed = JSON.parse(stored);
+    // 如果解析成功且包含用户信息，返回用户对象
+    if (parsed && typeof parsed === 'object') {
+      return parsed;
+    }
+    return null;
+  } catch {
+    // 解析失败，返回 null
+    return null;
+  }
 };
 
 /**
@@ -97,3 +98,12 @@ export const checkLocalAuth = (): boolean => {
   const token = extractTokenFromStorage();
   return !!token;
 };
+
+// 初始化时恢复认证状态
+const storedToken = extractTokenFromStorage();
+const storedUser = extractUserFromStorage();
+
+if (storedToken && storedUser) {
+  // 如果有本地存储的认证信息，更新 store 状态
+  useAuthStore.getState().login(storedUser, storedToken);
+}

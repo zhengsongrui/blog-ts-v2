@@ -39,10 +39,23 @@ export class TagService {
    */
   async getTags(pagination: PaginationQuery = {}) {
     const validatedPagination = validate(paginationSchema, pagination);
-    const { page, pageSize, sortBy, sortOrder } = validatedPagination;
+    const { page, pageSize, sortBy, sortOrder, name, slug } = validatedPagination;
 
     // 计算偏移量
     const skip = (page - 1) * pageSize;
+
+    // 构建where条件
+    const where: any = {};
+    if (name) {
+      where.name = {
+        contains: name
+      };
+    }
+    if (slug) {
+      where.slug = {
+        contains: slug
+      };
+    }
 
     // 构建排序条件
     const orderBy: any = {};
@@ -55,11 +68,14 @@ export class TagService {
     // 查询标签
     const [tags, total] = await Promise.all([
       prisma.tag.findMany({
+        where,
         skip,
         take: pageSize,
         orderBy,
       }),
-      prisma.tag.count(),
+      prisma.tag.count({
+        where,
+      }),
     ]);
 
     return {
@@ -262,13 +278,6 @@ export class TagService {
   async getTagStats(tagId: string) {
     const tag = await prisma.tag.findUnique({
       where: { id: tagId },
-      include: {
-        _count: {
-          select: {
-            posts: true,
-          },
-        },
-      },
     });
 
     if (!tag) {
@@ -278,12 +287,18 @@ export class TagService {
       } as ApiError;
     }
 
+    // 获取文章计数
+    const postCount = await prisma.postTag.count({
+      where: { tagId: tagId },
+    });
+
     return {
       id: tag.id,
       name: tag.name,
       slug: tag.slug,
-      postCount: tag._count.posts,
+      postCount: postCount,
       createdAt: tag.createdAt,
+      updatedAt: tag.updatedAt,
     };
   }
 

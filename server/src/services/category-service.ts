@@ -40,10 +40,23 @@ export class CategoryService {
    */
   async getCategories(pagination: PaginationQuery = {}) {
     const validatedPagination = validate(paginationSchema, pagination);
-    const { page, pageSize, sortBy, sortOrder } = validatedPagination;
-
+    const { page, pageSize, sortBy, sortOrder, name, slug } = validatedPagination;
+    console.log(validatedPagination);
     // 计算偏移量
     const skip = (page - 1) * pageSize;
+
+    // 构建查询条件
+    const where: any = {};
+    if (name) {
+      where.name = {
+        contains: name,
+      };
+    }
+    if (slug) {
+      where.slug = {
+        contains: slug,
+      };
+    }
 
     // 构建排序条件
     const orderBy: any = {};
@@ -58,9 +71,10 @@ export class CategoryService {
       prisma.category.findMany({
         skip,
         take: pageSize,
+        where,
         orderBy,
       }),
-      prisma.category.count(),
+      prisma.category.count({ where }),
     ]);
 
     return {

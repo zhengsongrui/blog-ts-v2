@@ -1,0 +1,25 @@
+@import '@/styles/variables.less';
+
+// 表格操作列样式
+.actionContainer {
+  display: flex;
+  gap: @spacing-md;
+}
+
+.editLink {
+  color: @primary-color;
+  cursor: pointer;
+  
+  &:hover {
+    color: @primary-color-hover;
+  }
+}
+
+.deleteLink {
+  color: @error-color;
+  cursor: pointer;
+  
+  &:hover {
+    color: darken(@error-color, 10%);
+  }
+}

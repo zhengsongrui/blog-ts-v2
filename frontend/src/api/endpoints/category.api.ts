@@ -24,9 +24,9 @@ export const categoryApi = {
    * @returns 分页分类列表
    */
   getCategories: (params?: CategoryQueryParams) =>
-    apiClient.get<PaginatedResponseCategory>('/categories', { 
+    apiClient.get<PaginatedResponseCategory>('/categories', {
       params,
-      skipAuth: true 
+      skipAuth: true
     }),
 
   /**

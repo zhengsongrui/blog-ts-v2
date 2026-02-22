@@ -99,6 +99,8 @@ export class CategoryController {
         pageSize: parseInt(req.query.pageSize as string) || 10,
         sortBy: req.query.sortBy as string,
         sortOrder: req.query.sortOrder as 'asc' | 'desc',
+        name: req.query.name as string,
+        slug: req.query.slug as string,
       };
       
       const result = await categoryService.getCategories(pagination);
