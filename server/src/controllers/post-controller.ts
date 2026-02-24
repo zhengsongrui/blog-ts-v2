@@ -101,6 +101,13 @@ export class PostController {
       
       // 构建筛选条件
       const filters: any = {};
+      const isAdminOrEditor = req.user && (req.user.role === 'ADMIN' || req.user.role === 'EDITOR');
+      
+      // 标题筛选（模糊匹配）
+      if (req.query.title) {
+        filters.title = req.query.title as string;
+      }
+      // 状态筛选
       if (req.query.status) {
         filters.status = req.query.status as string;
       }
@@ -114,10 +121,6 @@ export class PostController {
         filters.tagId = req.query.tagId as string;
       }
       
-      // 非管理员用户只能查看已发布的文章
-      if (!req.user || (req.user.role !== 'ADMIN' && req.user.role !== 'EDITOR')) {
-        filters.status = 'PUBLISHED';
-      }
       
       const result = await postService.getPosts(pagination, filters);
       

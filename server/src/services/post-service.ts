@@ -75,7 +75,7 @@ export class PostService {
   /**
    * 获取文章列表 (分页)
    */
-  async getPosts(pagination: PaginationQuery, filters: { status?: string; authorId?: string; categoryId?: string; tagId?: string } = {}) {
+  async getPosts(pagination: PaginationQuery, filters: { status?: string; authorId?: string; categoryId?: string; tagId?: string; title?: string } = {}) {
     const validatedPagination = validate(paginationSchema, pagination);
     const { page, pageSize, sortBy, sortOrder } = validatedPagination;
 
@@ -89,6 +89,11 @@ export class PostService {
     }
     if (filters.authorId) {
       where.authorId = filters.authorId;
+    }
+    if (filters.title) {
+      where.title = {
+        contains: filters.title,
+      };
     }
     if (filters.categoryId) {
       where.categories = {

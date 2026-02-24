@@ -57,6 +57,7 @@ export interface UpdateUserDto {
   username?: string;
   email?: string;
   avatar?: string;
+  password?: string;
   role?: Role;
 }
 
@@ -85,6 +86,7 @@ export interface Post {
   publishedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  viewCount?: number;
   categories?: Category[];
   tags?: Tag[];
 }
@@ -178,4 +180,22 @@ export enum PostStatus {
   DRAFT = 'DRAFT',
   PUBLISHED = 'PUBLISHED',
   ARCHIVED = 'ARCHIVED'
+}
+
+// 上传相关类型
+export interface FileInfo {
+  filename: string;
+  originalname: string;
+  mimetype: string;
+  size: number;
+  path: string;
+  url: string;
+}
+
+export interface UploadResponse {
+  success: boolean;
+  data: FileInfo | null;
+  error: ApiError | null;
+  message: string;
+  timestamp: string;
 }

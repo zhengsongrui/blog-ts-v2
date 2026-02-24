@@ -226,10 +226,17 @@ export class UserService {
       }
     }
 
+    // 处理密码更新
+    const updateData = { ...validatedData } as any;
+    if (updateData.password) {
+      updateData.passwordHash = await bcrypt.hash(updateData.password, config.security.bcryptRounds);
+      delete updateData.password;
+    }
+
     // 更新用户
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: validatedData,
+      data: updateData,
       select: {
         id: true,
         username: true,
@@ -277,6 +284,23 @@ export class UserService {
    */
   async updateCurrentUser(userId: string, data: UpdateUserDto): Promise<User> {
     return this.updateUser(userId, data);
+  }
+
+  /**
+   * 获取作者列表（公开）
+   * 返回所有用户的ID和用户名，用于文章列表筛选等场景
+   */
+  async getAuthors(): Promise<{ id: string; username: string }[]> {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+      },
+      orderBy: {
+        username: 'asc',
+      },
+    });
+    return users;
   }
 }
 

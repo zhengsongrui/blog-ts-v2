@@ -28,6 +28,11 @@ export const updateUserSchema = z.object({
     .max(100, '邮箱最多100个字符')
     .optional(),
   avatar: z.string().url('头像必须是有效的URL').optional(),
+  password: z.string()
+    .min(8, '密码至少8个字符')
+    .max(100, '密码最多100个字符')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, '密码必须包含大小写字母和数字')
+    .optional(),
   role: z.enum(['ADMIN', 'EDITOR', 'USER']).optional(),
 }).refine(data => Object.keys(data).length > 0, {
   message: '至少提供一个更新字段',

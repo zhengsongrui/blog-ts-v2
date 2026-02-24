@@ -31,13 +31,22 @@ router.post('/register', userController.register.bind(userController));
 
 /**
  * 用户登录
- * 
+ *
  * POST /api/v1/users/login
  * 功能：验证用户凭证并返回JWT令牌
  * 请求体：LoginDto
  * 返回：用户信息和JWT令牌
  */
 router.post('/login', userController.login.bind(userController));
+
+/**
+ * 获取作者列表（公开）
+ *
+ * GET /api/v1/users/authors
+ * 功能：获取所有作者的ID和用户名，用于文章列表筛选等场景
+ * 返回：作者列表
+ */
+router.get('/authors', userController.getAuthors.bind(userController));
 
 /**
  * 需要认证的路由 - 需要有效的JWT令牌
@@ -81,7 +90,7 @@ router.patch('/me', authenticate, userController.updateCurrentUser.bind(userCont
  *   - sortOrder: 排序顺序（asc/desc）
  * 返回：用户列表和分页信息
  */
-router.get('/', authenticate, authorize('ADMIN'), userController.getUsers.bind(userController));
+router.get('/', authenticate, userController.getUsers.bind(userController));
 
 /**
  * 根据ID获取用户信息

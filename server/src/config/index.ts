@@ -35,7 +35,7 @@ export const config = {
   // 速率限制配置
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15分钟
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '10000', 10),
   },
 
   // 安全配置

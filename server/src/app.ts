@@ -16,6 +16,7 @@
  */
 
 import express, { Application } from 'express';
+import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -27,6 +28,7 @@ import userRoutes from './routes/user-routes';
 import postRoutes from './routes/post-routes';
 import categoryRoutes from './routes/category-routes';
 import tagRoutes from './routes/tag-routes';
+import uploadRoutes from './routes/upload-routes';
 // import commentRoutes from './routes/comment-routes';
 
 /**
@@ -51,7 +53,25 @@ const app: Application = express();
  * - X-Content-Type-Options
  * - Referrer-Policy
  */
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", "https:", "data:"],
+      formAction: ["'self'"],
+      frameAncestors: ["'self'"],
+      imgSrc: ["'self'", "data:", "*"],
+      objectSrc: ["'none'"],
+      scriptSrc: ["'self'"],
+      scriptSrcAttr: ["'none'"],
+      styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+}));
 
 /**
  * CORS（跨域资源共享）配置
@@ -100,6 +120,11 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// 静态文件服务 - 提供上传的文件
+const uploadsDir = path.join(process.cwd(), 'uploads');
+console.log('静态文件服务目录:', uploadsDir);
+app.use('/uploads', express.static(uploadsDir));
+
 // ======================
 // 路由定义
 // ======================
@@ -135,6 +160,7 @@ app.use(`${config.app.apiPrefix}/users`, userRoutes);    // 用户相关路由
 app.use(`${config.app.apiPrefix}/posts`, postRoutes);    // 文章相关路由
 app.use(`${config.app.apiPrefix}/categories`, categoryRoutes);  // 分类路由
 app.use(`${config.app.apiPrefix}/tags`, tagRoutes);      // 标签路由
+app.use(`${config.app.apiPrefix}/upload`, uploadRoutes); // 文件上传路由
 // app.use(`${config.app.apiPrefix}/comments`, commentRoutes);     // 评论路由（待实现）
 
 /**

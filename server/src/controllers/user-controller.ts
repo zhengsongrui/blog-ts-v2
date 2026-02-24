@@ -285,6 +285,34 @@ export class UserController {
       next(error);
     }
   }
+
+  /**
+   * 获取作者列表（公开）
+   *
+   * 接口：GET /api/v1/users/authors
+   * 功能：获取所有作者的ID和用户名，用于文章列表筛选等场景
+   * 权限：公开访问
+   *
+   * @param req 请求对象
+   * @param res 响应对象
+   * @param next 下一个中间件函数
+   */
+  async getAuthors(req: Request, res: Response, next: NextFunction) {
+    try {
+      const authors = await userService.getAuthors();
+      
+      const response: ApiResponse = createResponse(
+        true,
+        authors,
+        null,
+        '获取作者列表成功'
+      );
+      
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 /**
