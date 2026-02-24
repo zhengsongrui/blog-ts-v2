@@ -16,7 +16,7 @@ frontend/src/
 ├── api/                 # API 接口层（client.ts, endpoints/, types/）
 ├── assets/              # 静态资源
 ├── components/          # React 组件（common/, layout/, ui/）
-├── config/              # 应用配置（constants.ts, routes.ts, theme.ts）
+├── config/              # 应用配置（constants.ts, theme.ts）
 ├── hooks/               # 自定义 React Hooks
 ├── layouts/             # 页面布局组件
 ├── pages/               # 页面组件（Home, Login, Posts, Admin等）
@@ -26,7 +26,7 @@ frontend/src/
 ├── utils/               # 工具函数
 ├── App.tsx              # 根组件
 ├── main.tsx             # 应用入口
-└── router.tsx           # 路由配置组件
+└── router           # 路由配置组件
 ```
 
 ## 代码风格
@@ -63,14 +63,6 @@ frontend/src/
 - Axios 实例配置在 `src/api/client.ts`（baseURL、拦截器）
 - 接口定义按模块放在 `src/api/endpoints/`（`user.api.ts`, `post.api.ts` 等）
 - 类型定义使用从 OpenAPI 生成的 TypeScript 类型（位于 `src/api/types/`）
-- 请求示例:
-```typescript
-import { apiClient } from '@/api/client';
-export const userApi = {
-  login: (data: LoginDto) => apiClient.post<AuthResponse>('/users/login', data),
-};
-```
-- API 调用在组件或自定义 Hook 中进行，成功后将数据更新到对应的 Zustand store
 
 ## 开发工作流
 ```bash

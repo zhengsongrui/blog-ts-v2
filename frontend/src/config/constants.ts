@@ -1,8 +1,8 @@
 // 应用常量定义
 
-export const APP_NAME = '个人博客';
+export const APP_NAME = 'BLOG-V2';
 export const APP_VERSION = '1.0.0';
-export const COPYRIGHT = `© ${new Date().getFullYear()} 个人博客. 保留所有权利。`;
+export const COPYRIGHT = `© ${new Date().getFullYear()} BLOG-V2. 保留所有权利。`;
 
 // API 配置
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
@@ -36,7 +36,6 @@ export const ROUTE_PATHS = {
   ADMIN: '/admin',
   ADMIN_USERS: '/admin/users',
   ADMIN_POSTS_MANAGEMENT: '/admin/postsManagement',
-  ADMIN_POST_CREATE: '/admin/posts/create',
   ADMIN_POST_EDIT: '/admin/posts/edit/:id',
   ADMIN_CATEGORIES_MANAGEMENT: '/admin/categoriesManagement',
   ADMIN_TAGS_MANAGEMENT: '/admin/tagsManagement',

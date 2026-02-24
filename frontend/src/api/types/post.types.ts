@@ -19,9 +19,9 @@ export interface Post {
   slug: string;
   content: string;
   excerpt: string | null;
-  featuredImage: string | null;
+  coverImage: string | null;
   status: PostStatus;
-  views: number;
+  viewCount: number;
   authorId: string;
   author: User | null;
   categories: Category[];

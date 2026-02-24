@@ -37,7 +37,7 @@ const Home: React.FC = () => {
   return (
     <div className={styles['home-page']}>
       <div className={styles['home-hero']}>
-        <h1 className={styles['home-title']}>欢迎来到个人博客</h1>
+        <h1 className={styles['home-title']}>欢迎来到BLOG-V2</h1>
         <p className={styles['home-subtitle']}>
           分享你的想法、经验和知识
         </p>

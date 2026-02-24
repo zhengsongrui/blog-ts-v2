@@ -52,7 +52,7 @@ const Register: React.FC = () => {
     <div className={styles['register-page']}>
       <div className={styles['register-header']}>
         {/* <h2 className={styles['register-title']}>注册新账户</h2> */}
-        <p className={styles['register-subtitle']}>创建您的个人博客账户</p>
+        <p className={styles['register-subtitle']}>创建您的BLOG-V2账户</p>
       </div>
 
       <Form

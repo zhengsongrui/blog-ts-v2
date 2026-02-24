@@ -12,6 +12,7 @@ import type {
   ApiResponseUser,
   PaginatedResponseUser,
   UserQueryParams,
+  ApiResponse,
 } from '../types';
 
 /**
@@ -56,6 +57,13 @@ export const userApi = {
    */
   getUsers: (params?: UserQueryParams) =>
     apiClient.get<PaginatedResponseUser>('/users', { params }),
+
+  /**
+   * 获取作者列表（公开）
+   * @returns 作者列表（仅包含ID和用户名）
+   */
+  getAuthors: () =>
+    apiClient.get<Array<{ id: string; username: string }>>('/users/authors', { skipAuth: true }),
 
   /**
    * 根据ID获取用户信息

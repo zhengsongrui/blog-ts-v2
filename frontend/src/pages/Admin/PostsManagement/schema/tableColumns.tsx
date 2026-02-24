@@ -33,8 +33,8 @@ export const renderPostColumns = ({ EditAction, DeleteAction }: {
       },
       {
         title: "浏览量",
-        dataIndex: "views",
-        key: "views",
+        dataIndex: "viewCount",
+        key: "viewCount",
         width: 100,
       },
       {

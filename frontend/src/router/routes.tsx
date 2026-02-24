@@ -12,6 +12,9 @@ const CategoriesManagement = lazy(() => import('@/pages/Admin/CategoriesManageme
 const TagsManagement = lazy(() => import('@/pages/Admin/TagsManagement'));
 const PostsManagement = lazy(() => import('@/pages/Admin/PostsManagement'));
 const PostEditor = lazy(() => import('@/pages/Admin/PostEditor/PostEditor'));
+const UsersManagement = lazy(() => import('@/pages/Admin/UsersManagement'));
+const Posts = lazy(() => import('@/pages/Posts'));
+const UserProfile = lazy(() => import('@/pages/UserProfile/UserProfile'));
 
 // 布局组件
 const MainLayout = lazy(() => import('@/layouts/MainLayout'));
@@ -48,14 +51,14 @@ export const routes: RouteObject[] = [
           </Suspense>
         ),
       },
-      // {
-      //   path: ROUTE_PATHS.POSTS,
-      //   element: (
-      //     <Suspense fallback={<LoadingFallback />}>
-      //       <Posts />
-      //     </Suspense>
-      //   ),
-      // },
+      {
+        path: ROUTE_PATHS.POSTS,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <Posts />
+          </Suspense>
+        ),
+      },
       {
         path: ROUTE_PATHS.POST_DETAIL,
         element: (
@@ -65,10 +68,18 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: ROUTE_PATHS.ADMIN_POST_CREATE,
+        path: ROUTE_PATHS.POST_CREATE,
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <PostEditor />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTE_PATHS.USER_PROFILE,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <UserProfile />
           </Suspense>
         ),
       },
@@ -143,8 +154,15 @@ export const routes: RouteObject[] = [
           </Suspense>
         ),
       },
-     
-      
+      {
+        path: ROUTE_PATHS.ADMIN_USERS,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <UsersManagement />
+          </Suspense>
+        ),
+      },
+       
     ],
   },
 ];

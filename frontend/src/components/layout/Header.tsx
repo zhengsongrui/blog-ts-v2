@@ -49,12 +49,12 @@ const Header: React.FC<HeaderProps> = ({ collapsed = false, onToggleCollapsed })
       label: '个人资料',
       onClick: () => navigate('/profile'),
     },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: '设置',
-      onClick: () => navigate('/settings'),
-    },
+    // {
+    //   key: 'settings',
+    //   icon: <SettingOutlined />,
+    //   label: '设置',
+    //   onClick: () => navigate('/settings'),
+    // },
     {
       type: 'divider',
     },

@@ -43,7 +43,7 @@ const MainLayout: React.FC = () => {
             <Content className={styles.content}>
               <Outlet />
             </Content>
-            <Footer />
+            {/* <Footer /> */}
           </Layout>
         </Layout>
       </Layout>

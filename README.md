@@ -1,5 +1,5 @@
 # blog-ts-v2
-REACT+TS个人博客v2版本
+REACT+TSBLOG-V2v2版本
 
 ## 项目结构
 
