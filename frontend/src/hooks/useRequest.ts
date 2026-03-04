@@ -7,7 +7,7 @@ const useRequest = <P = any, T = any>({
   manual = false,
 }: UseRequestOptions<P, T>) => {
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   
   const fetchedRef = useRef(false);
   const paramsRef = useRef<P>(params);

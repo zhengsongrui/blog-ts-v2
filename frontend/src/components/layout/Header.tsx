@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Layout, Button, Space, Avatar, Dropdown, theme } from 'antd';
 import type { MenuProps } from 'antd';
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
+  // MenuFoldOutlined,
+  // MenuUnfoldOutlined,
   UserOutlined,
   LogoutOutlined,
-  SettingOutlined,
+  // SettingOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { APP_NAME } from '@/config/constants';
@@ -26,16 +26,16 @@ interface HeaderProps {
   onToggleCollapsed?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ collapsed = false, onToggleCollapsed }) => {
-  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
+const Header: React.FC<HeaderProps> = () => {
+  // const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
 
-  const toggleTheme = () => {
-    const newTheme = themeMode === 'light' ? 'dark' : 'light';
-    setThemeMode(newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
+  // const toggleTheme = () => {
+  //   const newTheme = themeMode === 'light' ? 'dark' : 'light';
+  //   setThemeMode(newTheme);
+  //   document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  // };
 
   const handleLogout = () => {
     logout();
@@ -69,14 +69,14 @@ const Header: React.FC<HeaderProps> = ({ collapsed = false, onToggleCollapsed })
   return (
     <AntHeader className={styles.header}>
       <div className={styles['header-left']}>
-        {onToggleCollapsed && (
+        {/* {onToggleCollapsed && (
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={onToggleCollapsed}
             className={styles['toggle-button']}
           />
-        )}
+        )} */}
         <div className={styles['logo-area']} onClick={() => navigate('/')}>
           <div className={styles['logo-box']}>
             <span className={styles['logo-letter']}>B</span>
@@ -89,9 +89,9 @@ const Header: React.FC<HeaderProps> = ({ collapsed = false, onToggleCollapsed })
 
       <div className={styles['header-right']}>
         <Space>
-          <Button type="text" onClick={toggleTheme} className={styles['theme-toggle']}>
+          {/* <Button type="text" onClick={toggleTheme} className={styles['theme-toggle']}>
             {themeMode === 'light' ? '🌙' : '☀️'}
-          </Button>
+          </Button> */}
 
           {user ? (
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">

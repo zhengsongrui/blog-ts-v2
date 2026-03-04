@@ -229,7 +229,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
         </div>
 
         {/* 底部区域 */}
-        <div className={styles['bottom-area']}>
+        {/* <div className={styles['bottom-area']}>
           {!collapsed && (
             <Button
               type="text"
@@ -246,7 +246,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
               <Button type="text" icon={<SettingOutlined />} />
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </Sider>
   );
